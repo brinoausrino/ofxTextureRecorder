@@ -184,6 +184,10 @@ void ofxTextureRecorder::save(const ofTexture & tex){
 }
 
 void ofxTextureRecorder::save(const ofTexture & tex, int frame_){
+	save(tex, folderPath + ofToString(frame_, 5, '0') + "." + ofImageFormatExtension(imageFormat));
+}
+
+void ofxTextureRecorder::save(const ofTexture & tex, string filepath) {
 	if(buffersReady.size()<std::max(pixelBuffers.size()/2 + 1,size_t(2))){
 		{
 			GLuint time;
@@ -221,7 +225,7 @@ void ofxTextureRecorder::save(const ofTexture & tex, int frame_){
 					channel.send(buffer);
 				}else{
 					std::ostringstream oss;
-					oss << folderPath << ofToString(frame_, 5, '0') << "." << ofImageFormatExtension(imageFormat);
+					oss << filepath;
 					Buffer buffer{front, oss.str(), pixels};
 					channel.send(buffer);
 				}
