@@ -74,6 +74,7 @@ public:
 	void setup(const ofTextureData & texData);
     void save(const ofTexture & tex);
     void save(const ofTexture & tex, int frame);
+    void save(const ofTexture & tex, string filepath);
 	void stop(){
 		if(!encodeThreads.empty()){
 			stopThreads();
