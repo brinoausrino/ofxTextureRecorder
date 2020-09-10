@@ -9,9 +9,8 @@
 #include "half.hpp"
 #include <future>
 
-#if OFX_VIDEO_RECORDER
+
 #include "ofxVideoRecorder.h"
-#endif
 #if OFX_HPVLIB
 #include "HPVCreator.hpp"
 #endif
@@ -40,7 +39,7 @@ public:
 		friend class ofxTextureRecorder;
 	};
 
-#if OFX_VIDEO_RECORDER || OFX_HPVLIB
+
 	struct VideoSettings{
 		VideoSettings(int w, int h, float fps);
 		VideoSettings(const ofTexture & tex, float fps);
@@ -66,7 +65,6 @@ public:
 		friend class ofxTextureRecorder;
 	};
 	void setup(const VideoSettings & settings);
-#endif
 
 	void setup(int w, int h);
 	void setup(const Settings & settings);
@@ -74,18 +72,23 @@ public:
 	void setup(const ofTextureData & texData);
     void save(const ofTexture & tex);
     void save(const ofTexture & tex, int frame);
-    void save(const ofTexture & tex, string filepath);
+	void save(const ofTexture & tex, string filepath);
 	void stop(){
 		if(!encodeThreads.empty()){
 			stopThreads();
+			if (isVideo) {
+				//videoRecorder->clearFrames();
+			}
 		}
 	}
 
+    void setFolderPath(string path){folderPath = path;};
 	uint64_t getAvgTimeGpuDownload() const;
 	uint64_t getAvgTimeEncode() const;
 	uint64_t getAvgTimeSave() const;
 	uint64_t getAvgTimeTextureCopy() const;
 private:
+
 	void stopThreads();
 	void createThreads(size_t numThreads);
 	ofPixels getBuffer();
@@ -146,12 +149,6 @@ private:
 	uint64_t timeDownload = 0, halfDecodingTime = 0, encodingTime = 0, saveTime = 0, copyTextureTime = 0;
 
 
-#if OFX_VIDEO_RECORDER
-	ofxVideoRecorder videoRecorder;
-#endif
-#if OFX_HPVLIB
-	HPV::HPVCreator hpvCreator;
-	ThreadSafe_Queue<HPV::HPVCompressionProgress> hpvProgress;
-	std::thread hpvProgressThread;
-#endif
+	shared_ptr<ofxVideoRecorder> videoRecorder;
+
 };
